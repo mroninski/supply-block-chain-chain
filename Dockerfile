@@ -10,7 +10,7 @@ ARG REQUIREMENTS_FILENAME=requirements.txt
 COPY ./${REQUIREMENTS_FILENAME} /code/requirements.txt
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
-COPY ./api /code/app
+COPY . /code/
 
 # Initiate the application on port 80
 CMD uvicorn api.main:app --workers 1 --port 80 --host 0.0.0.0
