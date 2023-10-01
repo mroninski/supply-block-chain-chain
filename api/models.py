@@ -1,5 +1,4 @@
-import duckdb
-from pydantic import BaseModel, SecretStr
+from pydantic import BaseModel
 
 from api.database import db_obj
 
