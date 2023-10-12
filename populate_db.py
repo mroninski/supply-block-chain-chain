@@ -1,7 +1,8 @@
 import requests
+from random import randrange
 
 # Assets
-assets = [
+assets_examples = [
     {
         "VIN": "ZFF75VFA4F0568999",
         "Make": "Dodge",
@@ -164,10 +165,83 @@ assets = [
     },
 ]
 
+parts_example = [
+    {
+        "PartID": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+        "LastPort": "Auckland",
+        "LastUpdateDate": "2021-05-23 10:00:00",
+        "PartName": "BMW",
+        "Latitude": -36.848461,
+        "Longitude": 174.763336,
+    },
+    {
+        "PartID": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12",
+        "LastPort": "Sydney",
+        "LastUpdateDate": "2021-05-23 10:00:00",
+        "PartName": "BMW",
+        "Latitude": -33.86882,
+        "Longitude": 151.209296,
+    },
+    {
+        "PartID": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a13",
+        "LastPort": "Auckland",
+        "LastUpdateDate": "2021-05-23 10:00:00",
+        "PartName": "BMW",
+        "Latitude": -36.848461,
+        "Longitude": 174.763336,
+    },
+    {
+        "PartID": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a14",
+        "LastPort": "Auckland",
+        "LastUpdateDate": "2021-05-23 10:00:00",
+        "PartName": "BMW",
+        "Latitude": -36.848461,
+        "Longitude": 174.763336,
+    },
+    {
+        "PartID": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a15",
+        "LastPort": "Auckland",
+        "LastUpdateDate": "2021-05-23 10:00:00",
+        "PartName": "BMW",
+        "Latitude": -36.848461,
+        "Longitude": 174.763336,
+    },
+    {
+        "PartID": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a16",
+        "LastPort": "Sydney",
+        "LastUpdateDate": "2021-05-23 10:00:00",
+        "PartName": "BMW",
+        "Latitude": -33.86882,
+        "Longitude": 151.209296,
+    },
+    {
+        "PartID": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a17",
+        "LastPort": "Auckland",
+        "LastUpdateDate": "2021-05-23 10:00:00",
+        "PartName": "BMW",
+        "Latitude": -36.848461,
+        "Longitude": 174.763336,
+    },
+    {
+        "PartID": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a18",
+        "LastPort": "Sydney",
+        "LastUpdateDate": "2021-05-23 10:00:00",
+        "PartName": "BMW",
+        "Latitude": -33.86882,
+        "Longitude": 151.209296,
+    },
+]
+
 
 def main():
-    for asset in assets:
+    for asset in assets_examples:
+        if asset.get("Accident") is None:
+            asset["Accident"] = randrange(0, 4)
         x = requests.post("http://localhost:8000/assets/", json=asset)
+        print(x.text)
+
+    for part in parts_example:
+        x = requests.post("http://localhost:8000/parts/", json=part)
         print(x.text)
 
 
