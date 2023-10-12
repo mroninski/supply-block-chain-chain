@@ -1,8 +1,11 @@
-from fastapi import FastAPI
+from fastapi import BackgroundTasks, FastAPI
 from fastapi.responses import RedirectResponse
 
 from api.database import db_obj
-from api.models import Asset, Part
+from api.models import Asset, Part, TransactionHistory, model_from_args
+from api.background_task import create_transaction_history
+
+from datetime import datetime
 
 app = FastAPI()
 
@@ -10,13 +13,8 @@ app = FastAPI()
 
 # Nice to have
 
-# Build the model from the list so the response is nicer
-
-# Have timestamp of when the event was requested for easier comparison
-
 # Change the position of the lastport + lat + long
 
-# TODO: Add a new endpoint to get the parts from a specific port
 
 # TODO: Add to the database every time we receive a call from the DB
 
@@ -130,18 +128,32 @@ async def get_asset(vin: str):
 
 # New structure, for the parts location
 @app.get("/parts")
-async def get_all_parts():
+async def get_all_parts(background_tasks: BackgroundTasks):
     """
     Get all parts from the DuckDB database
     """
 
     response = db_obj.query("SELECT * FROM models.parts")
 
-    return {"ResponseDB": response}
+    if len(response) > 0:
+        response_model = [model_from_args(Part, r) for r in response]
+    else:
+        response_model = None
+
+    background_tasks.add_task(
+        create_transaction_history,
+        TransactionHistory(
+            EndpointRequest="GET /parts",
+            RequestTime=datetime.utcnow(),
+            ResponseStatus=200,
+        ),
+    )
+
+    return {"data": response_model}
 
 
 @app.get("/parts/{part_id}")
-async def get_part(part_id: str):
+async def get_part(part_id: str, background_tasks: BackgroundTasks):
     """
     Get all parts from the DuckDB database
     """
@@ -150,20 +162,25 @@ async def get_part(part_id: str):
         "SELECT * FROM models.parts WHERE PartID = ?", query_args=[part_id]
     )
 
-    positional_map = {
-        "PartID": response[0][0],
-        "LastPort": response[0][1],
-        "LastUpdateDate": response[0][2],
-        "PartName": response[0][3],
-        "Latitude": response[0][4],
-        "Longitude": response[0][5],
-    }
+    if len(response) > 0:
+        response_model = model_from_args(Part, response[0])
+    else:
+        response_model = None
 
-    return {"ResponseDB": Part(**positional_map)}
+    background_tasks.add_task(
+        create_transaction_history,
+        TransactionHistory(
+            EndpointRequest=f"GET /parts/{part_id}",
+            RequestTime=datetime.utcnow(),
+            ResponseStatus=200,
+        ),
+    )
+
+    return {"data": response_model, "requestTimestamp": datetime.utcnow()}
 
 
 @app.post("/parts/")
-async def create_part(part: Part):
+async def create_part(part: Part, background_tasks: BackgroundTasks):
     """
     Populate the DuckDB database with the part data
     """
@@ -202,7 +219,6 @@ async def create_part(part: Part):
                 part.Longitude,
             ],
         )
-        db_obj.save()
     else:
         # Update the part
         response = db_obj.query(
@@ -210,9 +226,9 @@ async def create_part(part: Part):
             UPDATE models.parts
             SET
                 LastPort = ?,
-                LastUpdateDate = ?
-                PartName = ?
-                Latitude = ?
+                LastUpdateDate = ?,
+                PartName = ?,
+                Latitude = ?,
                 Longitude = ?
             WHERE PartID = ?
             """,
@@ -225,5 +241,24 @@ async def create_part(part: Part):
                 part.PartID,
             ],
         )
+
+    background_tasks.add_task(
+        create_transaction_history,
+        TransactionHistory(
+            EndpointRequest=f"POST /parts/{part.PartID}",
+            RequestTime=datetime.utcnow(),
+            ResponseStatus=200,
+        ),
+    )
+    return {"dbResponse": response}
+
+
+@app.get("/transactions/")
+def get_all_transactions():
+    """
+    Get all transactions from the DuckDB database
+    """
+
+    response = db_obj.query("SELECT * FROM models.transaction_history")
 
     return {"ResponseDB": response}
