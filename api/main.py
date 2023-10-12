@@ -6,6 +6,8 @@ from api.models import Asset, Part
 
 app = FastAPI()
 
+# Update the documentation to show the actual design for the workflow
+
 # Nice to have
 
 # Build the model from the list so the response is nicer
