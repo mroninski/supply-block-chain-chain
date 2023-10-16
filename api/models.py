@@ -41,21 +41,25 @@ class Asset(BaseModel):
 
 
 class Part(BaseModel):
-    PartID: UUID
-    LastPort: str
-    LastUpdateDate: datetime
-    PartName: Optional[str] = None
-    Latitude: Optional[float] = None
-    Longitude: Optional[float] = None
+    SupplierID: str
+    ProductID: UUID
+    PartName: str
+    PartQuantity: int
+    RequiredArrivalDate: datetime
+    ShipmentMethods: List[str]
+    ShipmentDate: datetime
+    PartLocation: str
 
     __sql_defition__: str = """
     CREATE TABLE IF NOT EXISTS models.parts (
-        PartID UUID NOT NULL UNIQUE,
-        LastPort VARCHAR(255) NOT NULL,
-        LastUpdateDate TIMESTAMP NOT NULL,
-        PartName VARCHAR(255) NULL,
-        Latitude FLOAT NULL,
-        Longitude FLOAT NULL
+        SupplierID VARCHAR(255) NOT NULL,
+        ProductID UUID NOT NULL,
+        PartName VARCHAR(255) NOT NULL,
+        PartQuantity INTEGER NOT NULL,
+        RequiredArrivalDate TIMESTAMP NOT NULL,
+        ShipmentMethods JSON NOT NULL,
+        ShipmentDate TIMESTAMP NOT NULL,
+        PartLocation VARCHAR(255) NOT NULL
     );
     """
 

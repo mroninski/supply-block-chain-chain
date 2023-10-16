@@ -190,7 +190,8 @@ async def create_part(part: Part, background_tasks: BackgroundTasks):
     exists = False
     try:
         existance_check = db_obj.query(
-            "SELECT PartID FROM models.parts WHERE PartID = ?", query_args=[part.PartID]
+            "SELECT ProductID FROM models.parts WHERE ProductID = ?",
+            query_args=[part.ProductID],
         )
 
         exists = len(existance_check) > 0
@@ -207,16 +208,20 @@ async def create_part(part: Part, background_tasks: BackgroundTasks):
                 ?,
                 ?,
                 ?,
+                ?,
+                ?,
                 ?
             )
             """,
             query_args=[
-                part.PartID,
-                part.LastPort,
-                part.LastUpdateDate,
+                part.SupplierID,
+                part.ProductID,
                 part.PartName,
-                part.Latitude,
-                part.Longitude,
+                part.PartQuantity,
+                part.RequiredArrivalDate,
+                part.ShipmentMethods,
+                part.ShipmentDate,
+                part.PartLocation,
             ],
         )
     else:
@@ -225,27 +230,31 @@ async def create_part(part: Part, background_tasks: BackgroundTasks):
             """
             UPDATE models.parts
             SET
-                LastPort = ?,
-                LastUpdateDate = ?,
+                SupplierID = ?,
                 PartName = ?,
-                Latitude = ?,
-                Longitude = ?
-            WHERE PartID = ?
+                PartQuantity = ?,
+                RequiredArrivalDate = ?,
+                ShipmentMethods = ?
+                ShipmentDate = ?,
+                PartLocation = ?
+            WHERE ProductID = ?
             """,
             query_args=[
-                part.LastPort,
-                part.LastUpdateDate,
+                part.SupplierID,
                 part.PartName,
-                part.Latitude,
-                part.Longitude,
-                part.PartID,
+                part.PartQuantity,
+                part.RequiredArrivalDate,
+                part.ShipmentMethods,
+                part.ShipmentDate,
+                part.PartLocation,
+                part.ProductID,
             ],
         )
 
     background_tasks.add_task(
         create_transaction_history,
         TransactionHistory(
-            EndpointRequest=f"POST /parts/{part.PartID}",
+            EndpointRequest=f"POST /parts/{part.ProductID}",
             RequestTime=datetime.utcnow(),
             ResponseStatus=200,
         ),

@@ -1,5 +1,8 @@
+import json
 import requests
 from random import randrange
+from datetime import datetime, timedelta
+from uuid import uuid4
 
 # Assets
 assets_examples = [
@@ -167,68 +170,44 @@ assets_examples = [
 
 parts_example = [
     {
-        "PartID": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
-        "LastPort": "Auckland",
-        "LastUpdateDate": "2021-05-23 10:00:00",
-        "PartName": "Tires",
-        "Latitude": -36.848461,
-        "Longitude": 174.763336,
+        "SupplierID": "supplier123",
+        "ProductID": uuid4(),
+        "PartName": "Brake Pad",
+        "PartQuantity": 100,
+        "RequiredArrivalDate": datetime.utcnow() + timedelta(days=10),
+        "ShipmentMethods": ["Air", "Ground"],
+        "ShipmentDate": datetime.utcnow() + timedelta(days=5),
+        "PartLocation": "Melbourne",
     },
     {
-        "PartID": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12",
-        "LastPort": "Sydney",
-        "LastUpdateDate": "2021-05-23 10:00:00",
-        "PartName": "EnginePart1",
-        "Latitude": -33.86882,
-        "Longitude": 151.209296,
+        "SupplierID": "supplier456",
+        "ProductID": uuid4(),
+        "PartName": "Oil Filter",
+        "PartQuantity": 200,
+        "RequiredArrivalDate": datetime.utcnow() + timedelta(days=15),
+        "ShipmentMethods": ["Ground"],
+        "ShipmentDate": datetime.utcnow() + timedelta(days=7),
+        "PartLocation": "Sydney",
     },
     {
-        "PartID": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a13",
-        "LastPort": "Auckland",
-        "LastUpdateDate": "2021-05-23 10:00:00",
-        "PartName": "EnginePart2",
-        "Latitude": -36.848461,
-        "Longitude": 174.763336,
+        "SupplierID": "supplier789",
+        "ProductID": uuid4(),
+        "PartName": "Spark Plug",
+        "PartQuantity": 300,
+        "RequiredArrivalDate": datetime.utcnow() + timedelta(days=20),
+        "ShipmentMethods": ["Air"],
+        "ShipmentDate": datetime.utcnow() + timedelta(days=3),
+        "PartLocation": "Wellington",
     },
     {
-        "PartID": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a14",
-        "LastPort": "Auckland",
-        "LastUpdateDate": "2021-05-23 10:00:00",
-        "PartName": "EnginePart3",
-        "Latitude": -36.848461,
-        "Longitude": 174.763336,
-    },
-    {
-        "PartID": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a15",
-        "LastPort": "Auckland",
-        "LastUpdateDate": "2021-05-23 10:00:00",
-        "PartName": "EnginePart4",
-        "Latitude": -36.848461,
-        "Longitude": 174.763336,
-    },
-    {
-        "PartID": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a16",
-        "LastPort": "Sydney",
-        "LastUpdateDate": "2021-05-23 10:00:00",
-        "PartName": "Windows",
-        "Latitude": -33.86882,
-        "Longitude": 151.209296,
-    },
-    {
-        "PartID": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a17",
-        "LastPort": "Auckland",
-        "LastUpdateDate": "2021-05-23 10:00:00",
-        "PartName": "Airbags",
-        "Latitude": -36.848461,
-        "Longitude": 174.763336,
-    },
-    {
-        "PartID": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a18",
-        "LastPort": "Sydney",
-        "LastUpdateDate": "2021-05-23 10:00:00",
-        "PartName": "Chassis",
-        "Latitude": -33.86882,
-        "Longitude": 151.209296,
+        "SupplierID": "supplier123",
+        "ProductID": uuid4(),
+        "PartName": "Brake Pad",
+        "PartQuantity": 100,
+        "RequiredArrivalDate": datetime.utcnow() + timedelta(days=10),
+        "ShipmentMethods": ["Air", "Ground"],
+        "ShipmentDate": datetime.utcnow() + timedelta(days=5),
+        "PartLocation": "Auckland",
     },
 ]
 
@@ -241,6 +220,7 @@ def main():
         print(x.text)
 
     for part in parts_example:
+        part = json.loads(json.dumps(part, default=str))
         x = requests.post("http://localhost:8000/parts/", json=part)
         print(x.text)
 
