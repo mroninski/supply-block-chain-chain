@@ -43,10 +43,12 @@ class Asset(BaseModel):
 class Part(BaseModel):
     SupplierID: str
     ProductID: UUID
+    LogisticsProviderID: str
     PartName: str
     PartQuantity: int
     RequiredArrivalDate: datetime
-    ShipmentMethods: List[str]
+    # Options for shipment methods: "Air", "Sea", "Land"
+    ShipmentMethods: str
     ShipmentDate: datetime
     PartLocation: str
 
@@ -54,10 +56,11 @@ class Part(BaseModel):
     CREATE TABLE IF NOT EXISTS models.parts (
         SupplierID VARCHAR(255) NOT NULL,
         ProductID UUID NOT NULL,
+        LogisticsProviderID VARCHAR(255) NOT NULL,
         PartName VARCHAR(255) NOT NULL,
         PartQuantity INTEGER NOT NULL,
         RequiredArrivalDate TIMESTAMP NOT NULL,
-        ShipmentMethods JSON NOT NULL,
+        ShipmentMethods VARCHAR(255) NOT NULL,
         ShipmentDate TIMESTAMP NOT NULL,
         PartLocation VARCHAR(255) NOT NULL
     );

@@ -210,12 +210,14 @@ async def create_part(part: Part, background_tasks: BackgroundTasks):
                 ?,
                 ?,
                 ?,
+                ?,
                 ?
             )
             """,
             query_args=[
                 part.SupplierID,
                 part.ProductID,
+                part.LogisticsProviderID,
                 part.PartName,
                 part.PartQuantity,
                 part.RequiredArrivalDate,
@@ -232,6 +234,7 @@ async def create_part(part: Part, background_tasks: BackgroundTasks):
             SET
                 SupplierID = ?,
                 PartName = ?,
+                LogisticsProviderID = ?,
                 PartQuantity = ?,
                 RequiredArrivalDate = ?,
                 ShipmentMethods = ?
@@ -242,6 +245,7 @@ async def create_part(part: Part, background_tasks: BackgroundTasks):
             query_args=[
                 part.SupplierID,
                 part.PartName,
+                part.LogisticsProviderID,
                 part.PartQuantity,
                 part.RequiredArrivalDate,
                 part.ShipmentMethods,
